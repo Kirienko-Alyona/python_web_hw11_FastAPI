@@ -6,7 +6,7 @@ class ContactModel(BaseModel):
     name: str = Field('James', min_length=3, max_length=16)
     surname: str = Field('Cat', min_length=3, max_length=16)
     email: EmailStr = Field('user@example.com')
-    phone: int = Field('0631111234')
+    phone: int = Field('380631234567')
     born_date: date = Field('2023-03-29')
     
     
@@ -15,7 +15,7 @@ class ContactResponse(BaseModel):
     name: str
     surname: str
     email: EmailStr
-    phone: int
+    phone: int = 1
     born_date: date
 
     class Config:
@@ -26,5 +26,5 @@ class ContactUpdate(BaseModel):
     name: str
     surname: str
     email: EmailStr
-    phone: int
+    phone: int = 1
     born_date: date        

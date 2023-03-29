@@ -11,5 +11,5 @@ class Contact(Base):
     name = Column(String, nullable=False)
     surname = Column(String, nullable=False)
     email = Column(String, unique=True, index=True)
-    phone = Column(Integer, unique=True, nullable=False)
+    phone = Column(String, unique=True, nullable=False)
     born_date = Column(Date)   

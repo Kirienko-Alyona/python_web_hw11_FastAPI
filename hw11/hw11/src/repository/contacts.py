@@ -22,7 +22,7 @@ async def create_contact(body: ContactModel, db: Session) -> Contact:
     return contact
 
 async def update_contact(body: ContactUpdate, contact_id: int, db: Session) -> Contact| None:
-    contact = db.query(contact).filter_by(id=contact_id).first()
+    contact = db.query(Contact).filter_by(id=contact_id).first()
     if contact:
         contact.name = body.name,
         contact.surname = body.surname, 
@@ -40,5 +40,5 @@ async def remove_contact(contact_id: int, db: Session) -> Contact| None:
     return contact    
 
 async def search_contact(contact_name: str, db: Session) -> List[Contact]:
-    contact = db.query(Contact).filter(Contact.name.like(contact_name))
+    contact = db.query(Contact).filter(name=contact_name).all()  #.like(contact_name)
     return contact
