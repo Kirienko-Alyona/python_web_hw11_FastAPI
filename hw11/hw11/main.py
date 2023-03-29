@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from src.database.connect import get_db
+from src.routes import contacts
 
 app = FastAPI()
 
@@ -23,3 +24,6 @@ def healthchecker(db: Session = Depends(get_db)):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="Error connecting to the database")
+
+
+app.include_router(contacts.router, prefix='/api')
