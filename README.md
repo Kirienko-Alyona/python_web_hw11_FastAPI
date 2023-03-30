@@ -15,3 +15,6 @@ config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
 
 alembic revision --autogenerate -m 'Init'
 alembic upgrade head
+
+uvicorn main:app --host localhost --port 8000 --reload
+uvicorn main:app --reload

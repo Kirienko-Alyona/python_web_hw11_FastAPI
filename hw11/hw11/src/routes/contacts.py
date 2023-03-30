@@ -11,8 +11,8 @@ router = APIRouter(prefix='/contacts', tags=['contacts'])
 
 
 @router.get("/", response_model=List[ContactResponse])
-async def get_contacts(limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)):
-    contacts = await repository_contacts.get_contacts(limit, offset, db)
+async def get_contacts(search_name: str = None, search_surname: str = None, search_email: str = None, search_phone: str = None,limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)):
+    contacts = await repository_contacts.get_contacts(search_name, search_surname, search_email, search_phone, limit, offset, db)
     return contacts
 
 
@@ -25,13 +25,10 @@ async def get_contact(contact_id: int = Path(ge=1), db: Session = Depends(get_db
     return contact
 
 
-@router.get("/{contact_name}", response_model=ContactResponse)
-async def get_contact_name(contact_name: str, db: Session = Depends(get_db)):
-    contact = await repository_contacts.search_contact(contact_name, db)
-    if contact is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
-    return contact
+# @router.get("/", response_model=ContactResponse)
+# async def get_contact_name(contact_name: str = Path(min_length=1), db: Session = Depends(get_db)):
+#     contacts = await repository_contacts.get_contact_name(contact_name, db)
+#     return contacts
 
 
 @router.post("/", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
@@ -55,4 +52,13 @@ async def remove_contact(contact_id: int = Path(ge=1), db: Session = Depends(get
     if contact is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
+    return contact
+
+
+@router.get("/search_by_name/{name}", response_model=ContactResponse)
+async def search_by_name(name: str, db: Session = Depends(get_db)):
+    contact = await repository_contacts.search_by_name(name, db)
+    if contact is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact Not Found")
+    
     return contact

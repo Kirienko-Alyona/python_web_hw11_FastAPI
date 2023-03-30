@@ -1,12 +1,12 @@
 from datetime import date
 
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr # poetry add pydantic[email] 
 
 class ContactModel(BaseModel):
     name: str = Field('James', min_length=3, max_length=16)
     surname: str = Field('Cat', min_length=3, max_length=16)
     email: EmailStr = Field('user@example.com')
-    phone: int = Field('380631234567')
+    phone: int = Field("380931234567")#, gt=100, le=999999999)
     born_date: date = Field('2023-03-29')
     
     
@@ -15,11 +15,12 @@ class ContactResponse(BaseModel):
     name: str
     surname: str
     email: EmailStr
-    phone: int = 1
+    phone: int
     born_date: date
-
+    
     class Config:
-        orm_mode = True    
+        orm_mode = True
+        
         
 class ContactUpdate(BaseModel):
     id: int = 1
@@ -27,4 +28,7 @@ class ContactUpdate(BaseModel):
     surname: str
     email: EmailStr
     phone: int = 1
-    born_date: date        
+    born_date: date   
+    
+    class Config:
+        orm_mode = True     

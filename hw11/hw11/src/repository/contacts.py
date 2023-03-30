@@ -1,12 +1,23 @@
-from typing import List
+from typing import List, Optional
+
 from sqlalchemy.orm import Session
 
 from src.schemas.contacts import ContactModel, ContactUpdate
 from src.database.models import Contact
 
 
-async def get_contacts(limit: int, offset: int, db: Session) -> List[Contact]:
-    contacts = db.query(Contact).limit(limit).offset(offset).all()
+async def get_contacts(search_name: str, search_surname: str, search_email: str, search_phone: str, limit: int, offset: int, db: Session) -> Optional[List[Contact]]:
+    contacts = db.query(Contact)
+    if search_name:
+        #contacts = contacts.filter(Contact.name.ilike(f'%{s_name}%')) - робить те ж саме, що і icontains
+        contacts = contacts.filter(Contact.name.icontains(search_name))
+    if search_surname:   
+        contacts = contacts.filter(Contact.surname.icontains(search_surname))
+    if search_email:   
+        contacts = contacts.filter(Contact.email.icontains(search_email))   
+    if search_phone:
+        contacts = contacts.filter(Contact.phone.icontains(search_phone)) 
+    contacts = contacts.limit(limit).offset(offset).all()
     return contacts
 
 async def get_contact(contact_id: int, db: Session) -> Contact:
@@ -14,8 +25,7 @@ async def get_contact(contact_id: int, db: Session) -> Contact:
     return contact
 
 async def create_contact(body: ContactModel, db: Session) -> Contact:
-    contact = Contact(name = body.name, surname = body.surname, email = body.email, phone = body.phone, born_date = body.born_date)
-    #contact = Contact(**body.dict())
+    contact = Contact(**body.dict())
     db.add(contact)
     db.commit()
     db.refresh(contact)
@@ -39,6 +49,9 @@ async def remove_contact(contact_id: int, db: Session) -> Contact| None:
         db.commit()
     return contact    
 
-async def search_contact(contact_name: str, db: Session) -> List[Contact]:
-    contact = db.query(Contact).filter(name=contact_name).all()  #.like(contact_name)
+async def search_by_name(search_name: str, db: Session):# -> Optional[Contact]:
+    
+    contact = db.query(Contact).filter_by(name=search_name).first()
+    """To search for a record by a specific name."""
+    # return db.query(Contact).filter(Contact.name == name).first()  # .all()
     return contact
