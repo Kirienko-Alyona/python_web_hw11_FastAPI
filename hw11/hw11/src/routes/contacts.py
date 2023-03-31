@@ -1,7 +1,9 @@
-from typing import List
+from datetime import date
+from typing import List, Optional, Type
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy.orm import Session
+from src.database.models import Contact
 
 from src.database.connect import get_db
 from src.repository import contacts as repository_contacts
@@ -11,8 +13,8 @@ router = APIRouter(prefix='/contacts', tags=['contacts'])
 
 
 @router.get("/", response_model=List[ContactResponse])
-async def get_contacts_search(search_name: str = None, search_surname: str = None, search_email: str = None, search_phone: str = None,limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)):
-    contacts = await repository_contacts.get_contacts_search(search_name, search_surname, search_email, search_phone, limit, offset, db)
+async def get_contacts_search(count_days: int = None, search_name: str = None, search_surname: str = None, search_email: str = None, search_phone: str = None, limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)):
+    contacts = await repository_contacts.get_contacts_search(count_days, search_name, search_surname, search_email, search_phone, limit, offset, db)
     return contacts
 
 
@@ -47,3 +49,9 @@ async def remove_contact(contact_id: int = Path(ge=1), db: Session = Depends(get
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
     return contact
+
+# @router.get("/next_week_births", response_model=List[ContactResponse])
+# async def get_next_births(days: int = 7, limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)) -> Optional[List[Type[Contact]]]:
+#     contacts = await repository_contacts.get_week_births(days, limit, offset, db)
+#     return contacts
+    
