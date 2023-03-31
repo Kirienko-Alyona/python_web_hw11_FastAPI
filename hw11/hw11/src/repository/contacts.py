@@ -68,19 +68,4 @@ async def remove_contact(contact_id: int, db: Session) -> Contact| None:
     if contact:
         db.delete(contact)
         db.commit()
-    return contact    
-
-# async def get_next_births(days: int, limit: int, offset: int, db: Session) -> Optional[List[Type[Contact]]]:
-     
-#     contacts = db.query(Contact).all()
-    
-#     today = date.today()
-#     for next_day in range(today, timedelta(days=days+1)):
-#         print(next_day)
-
-#         contacts = contacts.filter(Contact.born_date.icontains(next_day))
-#         print(contacts)
-#         contacts = contacts.limit(limit).offset(offset).all()
-#     if not contacts:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact Not Found")      
-#     return contacts  
+    return contact     
