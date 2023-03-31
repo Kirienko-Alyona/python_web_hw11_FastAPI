@@ -2,6 +2,7 @@ from datetime import date, timedelta
 from typing import List, Optional
 
 from sqlalchemy.orm import Session
+from sqlalchemy import extract
 
 from src.schemas.contacts import ContactModel, ContactUpdate
 from src.database.models import Contact
@@ -92,15 +93,12 @@ async def remove_contact(contact_id: int, db: Session) -> Contact | None:
 
 async def get_birthday_list(quontity_days: int, db: Session) -> Optional[List[Contact]] | None:
     # function returns a list of contacts whose birthday will be in the near future "count_days"
-    birthday_list = []
     contacts = db.query(Contact)
     if quontity_days:
         today = date.today()
-        for i in range(1, quontity_days+1):
-            next_day = today + timedelta(days=i)
-            contacts_birthday = contacts.filter_by(born_date=next_day).all()
-            if len(contacts_birthday) != 0:
-                birthday_list += contacts_birthday
-            else:
-                continue
-        return birthday_list
+        start_range = today - timedelta(days=365*70)
+        end_range = today + timedelta(days=quontity_days+1)
+        contacts_birthday = contacts.filter(Contact.born_date.between(start_range, end_range)).all()
+        print(type(contacts_birthday))
+        print(contacts_birthday)
+    return contacts_birthday
