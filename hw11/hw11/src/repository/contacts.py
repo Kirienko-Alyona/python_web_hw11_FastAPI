@@ -11,21 +11,21 @@ async def get_contacts_search(count_days: int, search_name: str, search_surname:
     #if not input params - returned all list contacts 
     #else - search by parametrs: name, surname, email, phone - returned list contacts     
     #function returns a list of contacts whose birthday will be in the near future "count_days"
-    new2_contacts = []
+    contacts_list_obj = []
     contacts = db.query(Contact) 
     if count_days:
         today = date.today()
         for i in range(1, count_days+1):
             next_day = today + timedelta(days=i)
-            new_contacts = contacts.filter_by(born_date=next_day).first()
-            if new_contacts != None: 
-                new2_contacts.append(new_contacts)
+            contacts_obj = contacts.filter_by(born_date=next_day).first()
+            if contacts_obj != None: 
+                contacts_list_obj.append(contacts_obj)
             else: 
                 continue
-        return new2_contacts         
+        return contacts_list_obj         
     if search_name:
         #contacts = contacts.filter(Contact.name.ilike(f'%{s_name}%')) - робить те ж саме, що і icontains
-        contacts = contacts.filter(Contact.name.icontains(search_name)).limit(limit).offset(offset).all()  
+        contacts = contacts.filter(Contact.name.icontains(search_name))  
         print(type(contacts))
         print(contacts)
     if search_surname:   
@@ -34,6 +34,7 @@ async def get_contacts_search(count_days: int, search_name: str, search_surname:
         contacts = contacts.filter(Contact.email.icontains(search_email))   
     if search_phone:
         contacts = contacts.filter(Contact.phone.icontains(search_phone)) 
+    contacts.limit(limit).offset(offset).all()    
     return contacts 
         
 
