@@ -11,8 +11,8 @@ router = APIRouter(prefix='/contacts', tags=['contacts'])
 
 
 @router.get("/", response_model=List[ContactResponse])
-async def get_contacts_search(count_days: int = None, search_name: str = None, search_surname: str = None, search_email: str = None, search_phone: str = None, limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)):
-    contacts = await repository_contacts.get_contacts_search({'count_days': count_days, 'name': search_name, 'surname': search_surname, 'search_email': search_email, 'search_phone': search_phone}, limit, offset, db)
+async def get_contacts_search(quontity_days: int = None, name: str = None, surname: str = None, email: str = None, phone: str = None, limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)):
+    contacts = await repository_contacts.get_contacts_search({'quontity_days': quontity_days, 'name': name, 'surname': surname, 'search_email': email, 'search_phone': phone}, limit, offset, db)
     return contacts
 
 

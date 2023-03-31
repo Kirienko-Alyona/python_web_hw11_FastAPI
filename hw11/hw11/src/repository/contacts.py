@@ -82,7 +82,7 @@ async def get_contacts_search(dict_values: dict, limit: int, offset: int, db: Se
     #if not input params - returned all list contacts 
     #else - search by parametrs: name, surname, email, phone - returned list contacts     
     #function returns a list of contacts whose birthday will be in the near future "count_days"
-    #contacts_list_obj = []
+    
     contacts = db.query(Contact) 
     
     for key, value in dict_values.items():
