@@ -46,10 +46,4 @@ async def remove_contact(contact_id: int = Path(ge=1), db: Session = Depends(get
     if contact is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
-    return contact
-
-# @router.get("/next_week_births", response_model=List[ContactResponse])
-# async def get_next_births(days: int = 7, limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)) -> Optional[List[Type[Contact]]]:
-#     contacts = await repository_contacts.get_week_births(days, limit, offset, db)
-#     return contacts
-    
+    return contact    
