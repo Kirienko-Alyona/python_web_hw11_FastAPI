@@ -28,8 +28,8 @@ async def get_contact_id(contact_id: int = Path(ge=1), db: Session = Depends(get
     return contact
 
 
-@router.get("/{birthday_list}", response_model=List[ContactResponse])
-async def get_birthday_list(quontity_days: int = None, db: Session = Depends(get_db)):
+@router.get("/birthdays/{quontity_days}", response_model=List[ContactResponse])
+async def get_birthday_list(quontity_days: int = Path(ge=1), db: Session = Depends(get_db)):
     contact = await repository_contacts.get_birthday_list(quontity_days, db)
     if contact is None:
         raise HTTPException(
