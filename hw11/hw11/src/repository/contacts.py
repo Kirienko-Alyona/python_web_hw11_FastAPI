@@ -7,7 +7,7 @@ from sqlalchemy.dialects import postgresql
 from src.schemas.contacts import ContactModel, ContactUpdate
 from src.database.models import Contact
 
-
+#SEARCH BY ONE PRAMETERS
 # async def get_contacts_search(count_days: int, search_name: str, search_surname: str, search_email: str, search_phone: str, limit: int, offset: int, db: Session) -> Optional[List[Contact]]:
 #     #if not input params - returned all list contacts 
 #     #else - search by parametrs: name, surname, email, phone - returned list contacts     
@@ -77,7 +77,7 @@ async def remove_contact(contact_id: int, db: Session) -> Contact| None:
 
 
 
-
+#SEARCH BY SEVERAL PARAMETERS
 async def get_contacts_search(dict_values: dict, limit: int, offset: int, db: Session) -> Optional[List[Contact]]: #count_days: int, search_name: str, search_surname: str, search_email: str, search_phone: str
     #if not input params - returned all list contacts 
     #else - search by parametrs: name, surname, email, phone - returned list contacts     
