@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime, date
 
 from pydantic import BaseModel, Field, EmailStr # poetry add pydantic[email] 
 
@@ -17,6 +17,8 @@ class ContactResponse(BaseModel):
     email: EmailStr
     phone: int
     born_date: date
+    created_at: datetime
+    updated_at: datetime
     
     class Config:
         orm_mode = True

@@ -1,4 +1,10 @@
-from fastapi import Depends, FastAPI, HTTPException
+import time
+
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
@@ -6,11 +12,27 @@ from src.database.connect import get_db
 from src.routes import contacts
 
 app = FastAPI()
+favicon_path = 'favicon.ico'
+
+@app.middleware('http')
+async def custom_middleware(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    during = time.time() - start_time
+    response.headers['performance'] = str(during)
+    return response
+
+templates = Jinja2Templates(directory='templates')
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse(favicon_path)
+
+@app.get("/", response_class=HTMLResponse, description="Main Page")
+async def root(request: Request):
+    return templates.TemplateResponse('index.html', {"request": request, "title": "Contacts"})
 
 
 @app.get("/api/healthchecker")

@@ -8,7 +8,7 @@ poetry add uvicorn[standard]
 poetry add alembic sqlalchemy
 alembic init migrations
 
-added in env.py 
+added in file ---> env.py 
 
 target_metadata = Base.metadata
 config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
