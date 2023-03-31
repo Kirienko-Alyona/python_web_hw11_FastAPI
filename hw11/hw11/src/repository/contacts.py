@@ -18,6 +18,8 @@ async def get_contacts_search(count_days: int, search_name: str, search_surname:
         for i in range(1, count_days+1):
             next_day = today + timedelta(days=i)
             contacts_obj = contacts.filter_by(born_date=next_day).first()
+            print(type(contacts_obj))
+            print(contacts_obj)
             if contacts_obj != None: 
                 contacts_list_obj.append(contacts_obj)
             else: 
@@ -25,17 +27,17 @@ async def get_contacts_search(count_days: int, search_name: str, search_surname:
         return contacts_list_obj         
     if search_name:
         #contacts = contacts.filter(Contact.name.ilike(f'%{s_name}%')) - робить те ж саме, що і icontains
-        contacts = contacts.filter(Contact.name.icontains(search_name))  
-        print(type(contacts))
-        print(contacts)
+        contacts = contacts.filter(Contact.name.icontains(search_name)).limit(limit).offset(offset).all()
+        return contacts 
     if search_surname:   
-        contacts = contacts.filter(Contact.surname.icontains(search_surname))
+        contacts = contacts.filter(Contact.surname.icontains(search_surname)).limit(limit).offset(offset).all()   
+        return contacts 
     if search_email:   
-        contacts = contacts.filter(Contact.email.icontains(search_email))   
+        contacts = contacts.filter(Contact.email.icontains(search_email)).limit(limit).offset(offset).all()    
+        return contacts 
     if search_phone:
-        contacts = contacts.filter(Contact.phone.icontains(search_phone)) 
-    contacts.limit(limit).offset(offset).all()    
-    return contacts 
+        contacts = contacts.filter(Contact.phone.icontains(search_phone)).limit(limit).offset(offset).all()    
+        return contacts 
         
 
 async def get_contact_id(contact_id: int, db: Session) -> Contact:
