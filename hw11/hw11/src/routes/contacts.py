@@ -11,8 +11,11 @@ router = APIRouter(prefix='/contacts', tags=['contacts'])
 
 
 @router.get("/", response_model=List[ContactResponse])
-async def get_contacts_search(quontity_days: int = None, name: str = None, surname: str = None, email: str = None, phone: str = None, limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)):
-    contacts = await repository_contacts.get_contacts_search({'quontity_days': quontity_days, 'name': name, 'surname': surname, 'search_email': email, 'search_phone': phone}, limit, offset, db)
+async def get_contacts_search(name: str = None, surname: str = None, email: str = None, phone: str = None, limit: int = Query(10, le=100), offset: int = 0, db: Session = Depends(get_db)):
+    contacts = await repository_contacts.get_contacts_search({'name': name, 'surname': surname, 'email': email, 'phone': phone}, limit, offset, db)
+    if contacts is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
     return contacts
 
 
@@ -46,4 +49,13 @@ async def remove_contact(contact_id: int = Path(ge=1), db: Session = Depends(get
     if contact is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
-    return contact    
+    return contact
+
+
+@router.get("/{birthday_list}", response_model=List[ContactResponse], tags=['birthdays of contacts'])
+async def get_birthday_list(quontity_days: int = None, db: Session = Depends(get_db)):
+    contact = await repository_contacts.get_birthday_list(quontity_days, db)
+    if contact is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
+    return contact
