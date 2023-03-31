@@ -2,42 +2,43 @@ from datetime import date, timedelta
 from typing import List, Optional
 
 from sqlalchemy.orm import Session
+from sqlalchemy.dialects import postgresql
 
 from src.schemas.contacts import ContactModel, ContactUpdate
 from src.database.models import Contact
 
 
-async def get_contacts_search(count_days: int, search_name: str, search_surname: str, search_email: str, search_phone: str, limit: int, offset: int, db: Session) -> Optional[List[Contact]]:
-    #if not input params - returned all list contacts 
-    #else - search by parametrs: name, surname, email, phone - returned list contacts     
-    #function returns a list of contacts whose birthday will be in the near future "count_days"
-    contacts_list_obj = []
-    contacts = db.query(Contact) 
-    if count_days:
-        today = date.today()
-        for i in range(1, count_days+1):
-            next_day = today + timedelta(days=i)
-            contacts_obj = contacts.filter_by(born_date=next_day).first()
-            print(type(contacts_obj))
-            print(contacts_obj)
-            if contacts_obj != None: 
-                contacts_list_obj.append(contacts_obj)
-            else: 
-                continue
-        return contacts_list_obj         
-    if search_name:
-        #contacts = contacts.filter(Contact.name.ilike(f'%{s_name}%')) - робить те ж саме, що і icontains
-        contacts = contacts.filter(Contact.name.icontains(search_name)).limit(limit).offset(offset).all()
-        return contacts 
-    if search_surname:   
-        contacts = contacts.filter(Contact.surname.icontains(search_surname)).limit(limit).offset(offset).all()   
-        return contacts 
-    if search_email:   
-        contacts = contacts.filter(Contact.email.icontains(search_email)).limit(limit).offset(offset).all()    
-        return contacts 
-    if search_phone:
-        contacts = contacts.filter(Contact.phone.icontains(search_phone)).limit(limit).offset(offset).all()    
-        return contacts 
+# async def get_contacts_search(count_days: int, search_name: str, search_surname: str, search_email: str, search_phone: str, limit: int, offset: int, db: Session) -> Optional[List[Contact]]:
+#     #if not input params - returned all list contacts 
+#     #else - search by parametrs: name, surname, email, phone - returned list contacts     
+#     #function returns a list of contacts whose birthday will be in the near future "count_days"
+#     contacts_list_obj = []
+#     contacts = db.query(Contact) 
+#     if count_days:
+#         today = date.today()
+#         for i in range(1, count_days+1):
+#             next_day = today + timedelta(days=i)
+#             contacts_obj = contacts.filter_by(born_date=next_day).first()
+#             print(type(contacts_obj))
+#             print(contacts_obj)
+#             if contacts_obj != None: 
+#                 contacts_list_obj.append(contacts_obj)
+#             else: 
+#                 continue
+#         return contacts_list_obj         
+#     if search_name:
+#         #contacts = contacts.filter(Contact.name.ilike(f'%{s_name}%')) - робить те ж саме, що і icontains
+#         contacts = contacts.filter(Contact.name.icontains(search_name)).limit(limit).offset(offset).all()
+#         return contacts 
+#     if search_surname:   
+#         contacts = contacts.filter(Contact.surname.icontains(search_surname)).limit(limit).offset(offset).all()   
+#         return contacts 
+#     if search_email:   
+#         contacts = contacts.filter(Contact.email.icontains(search_email)).limit(limit).offset(offset).all()    
+#         return contacts 
+#     if search_phone:
+#         contacts = contacts.filter(Contact.phone.icontains(search_phone)).limit(limit).offset(offset).all()    
+#         return contacts 
         
 
 async def get_contact_id(contact_id: int, db: Session) -> Contact:
@@ -71,4 +72,54 @@ async def remove_contact(contact_id: int, db: Session) -> Contact| None:
     if contact:
         db.delete(contact)
         db.commit()
-    return contact     
+    return contact    
+
+
+
+
+
+async def get_contacts_search(dict_values: dict, limit: int, offset: int, db: Session) -> Optional[List[Contact]]: #count_days: int, search_name: str, search_surname: str, search_email: str, search_phone: str
+    #if not input params - returned all list contacts 
+    #else - search by parametrs: name, surname, email, phone - returned list contacts     
+    #function returns a list of contacts whose birthday will be in the near future "count_days"
+    #contacts_list_obj = []
+    contacts = db.query(Contact) 
+    
+    for key, value in dict_values.items():
+        print(key, value)
+        if value != None:
+            attr = getattr(Contact, key)
+            contacts = contacts.filter(attr.icontains(value))
+    contacts = contacts.limit(limit).offset(offset).all()
+    return contacts
+        #     values.append(value_item)
+        # values_tuple = tuple(values) 
+        # print(values_tuple)   
+    #contacts = contacts.filter(Contact.name.icontains(search_name).filter(Contact.surname.icontains(search_surname))).limit(limit).offset(offset).all()
+            
+
+    # if count_days:
+    #     today = date.today()
+    #     for i in range(1, count_days+1):
+    #         next_day = today + timedelta(days=i)
+    #         contacts_obj = contacts.filter_by(born_date=next_day).first()
+    #         print(type(contacts_obj))
+    #         print(contacts_obj)
+    #         if contacts_obj != None: 
+    #             contacts_list_obj.append(contacts_obj)
+    #         else: 
+    #             continue
+    #     return contacts_list_obj         
+    # if search_name and search_surname:
+    #     #contacts = contacts.filter(Contact.name.ilike(f'%{s_name}%')) - робить те ж саме, що і icontains
+    #     contacts = contacts.filter(Contact.name.icontains(search_name), Contact.surname.icontains(search_surname)).limit(limit).offset(offset).all()
+    #     return contacts 
+    # if search_surname:   
+    #     contacts = contacts.filter(Contact.surname.icontains(search_surname)).limit(limit).offset(offset).all()   
+    #     return contacts 
+    # if search_email:   
+    #     contacts = contacts.filter(Contact.email.icontains(search_email)).limit(limit).offset(offset).all()    
+    #     return contacts 
+    # if search_phone:
+    #     contacts = contacts.filter(Contact.phone.icontains(search_phone)).limit(limit).offset(offset).all()    
+    #     return contacts 
