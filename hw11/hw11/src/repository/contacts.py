@@ -1,6 +1,5 @@
 from datetime import date, timedelta
-from typing import List, Optional, Type
-from fastapi import HTTPException, status
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -11,25 +10,19 @@ from src.database.models import Contact
 async def get_contacts_search(count_days: int, search_name: str, search_surname: str, search_email: str, search_phone: str, limit: int, offset: int, db: Session) -> Optional[List[Contact]]:
     #if not input params - returned all list contacts 
     #else - search by parametrs: name, surname, email, phone - returned list contacts     
-    contacts = db.query(Contact) 
+    #function returns a list of contacts whose birthday will be in the near future "count_days"
     new2_contacts = []
+    contacts = db.query(Contact) 
     if count_days:
         today = date.today()
         for i in range(1, count_days+1):
             next_day = today + timedelta(days=i)
-            print(next_day)
-            
             new_contacts = contacts.filter_by(born_date=next_day).first()
             if new_contacts != None: 
-                print(type(new_contacts)) 
-                print(new_contacts)
                 new2_contacts.append(new_contacts)
             else: 
                 continue
         return new2_contacts         
-
-
-
     if search_name:
         #contacts = contacts.filter(Contact.name.ilike(f'%{s_name}%')) - робить те ж саме, що і icontains
         contacts = contacts.filter(Contact.name.icontains(search_name)).limit(limit).offset(offset).all()  
@@ -41,10 +34,6 @@ async def get_contacts_search(count_days: int, search_name: str, search_surname:
         contacts = contacts.filter(Contact.email.icontains(search_email))   
     if search_phone:
         contacts = contacts.filter(Contact.phone.icontains(search_phone)) 
-    #print(type(contacts))
-    #contacts = contacts.limit(limit).offset(offset).all() 
-    # if type(new2_contacts):
-    #     return new2_contacts 
     return contacts 
         
 
